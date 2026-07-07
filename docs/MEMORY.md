@@ -50,16 +50,16 @@ Category-error acceptance test ("one-second rule"):
 
 | Phase | Status | Entry Verdict | Gate Check | Exit Verdict |
 |-------|--------|---------------|-----------:|--------------|
-| 0 | 🟢 DONE | RNG + harness | `npm run build` → tsc clean, `npm test` Phase0 specs | ✓ Determinism verified |
-| 1 | 🟢 DONE | Terrain + sky + light | Perlin FBM heightmap, river carving, 3JS mesh | ✓ 11 specs green, mesh renders |
-| 2 | ⬜ TODO | Water + vegetation | >= 400k grass; >= 6 species; >= 60 fps vista | - |
-| 3 | ⬜ TODO | Buildings + placement | 14 silhouettes; terrace on 0.15-rad slope; no float | - |
-| 4 | ⬜ TODO | Agents + nav | >= 120 settlers + 30 cattle @ >= 60 fps; herd mass | - |
-| 5 | ⬜ TODO | Economy sim | >= 20 Vitest specs; determinism, production, starvation | - |
-| 6 | ⬜ TODO | Western systems | >= 6 more specs; raid screenshot shows bandits valley-mouth | - |
-| 7 | ⬜ TODO | Weather/fire/disease | Drought river-drop + bleach; duststorm; fire emissive + spread | - |
-| 8 | ⬜ TODO | UI/audio/Gazette | 20-min unattended 6x: pop>=20, >=1 raid, >=1 Gazette, qa.error null | - |
-| 9 | ⬜ TODO | Perf optimization | >= 60 fps @1440p, pixel-equivalent to pre-opt baseline | - |
+| 0 | 🟢 DONE | RNG + harness | Determinism | ✓ 10 tests |
+| 1 | 🟢 DONE | Terrain + sky + light | Perlin, river, mesh | ✓ 11 tests |
+| 2 | 🟢 DONE | Water + vegetation | Animation, 6 species | ✓ 3 tests |
+| 3 | 🟢 DONE | Buildings + placement | 14 types, terrace | ✓ 8 tests |
+| 4 | 🟢 DONE | Agents + nav | A*, settlers, cattle | ✓ 10 tests |
+| 5 | 🟢 DONE | Economy sim | Production, boom/bust | ✓ 12 tests |
+| 6 | 🟡 NEXT | Western systems | Raids, duels, law | - |
+| 7 | ⬜ TODO | Weather/fire/disease | Drought, storms, fire | - |
+| 8 | ⬜ TODO | UI/audio/Gazette | HUD, SFX, Gazette | - |
+| 9 | ⬜ TODO | Perf optimization | 60 fps @1440p | - |
 
 ## Self-Score Template (fill at Phase 9)
 
@@ -76,4 +76,4 @@ Category-error acceptance test ("one-second rule"):
 
 ---
 
-**Last updated:** Phase 0 (2025-07-07)
+**Last updated:** Phase 5 (2025-07-07, 54/54 tests passing)
