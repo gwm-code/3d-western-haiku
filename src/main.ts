@@ -6,6 +6,10 @@ import { setSeed } from './sim/rng'
 import { generateTerrain } from './sim/terrain'
 import { setupTerrainGraphics } from './graphics/terrain'
 import type { TerrainGraphics } from './graphics/terrain'
+import { setupWaterGraphics, updateWater } from './graphics/water'
+import type { WaterGraphics } from './graphics/water'
+import { setupVegetationGraphics } from './graphics/vegetation'
+import type { VegetationGraphics } from './graphics/vegetation'
 
 /**
  * QA harness interface (exposed to console/tests).
@@ -34,6 +38,8 @@ class DeadwaterGulch {
   private lastFpsUpdate = Date.now()
   private fps = 0
   private terrain: TerrainGraphics | null = null
+  private water: WaterGraphics | null = null
+  private vegetation: VegetationGraphics | null = null
 
   constructor() {
     this.state = this.loadState()
@@ -100,6 +106,12 @@ class DeadwaterGulch {
     // Generate terrain (Phase 1)
     const terrainSim = generateTerrain(this.state.day, 256, 256, 2.0)
     this.terrain = setupTerrainGraphics(this.scene, terrainSim)
+    
+    // Setup water (Phase 2)
+    this.water = setupWaterGraphics(this.scene, terrainSim)
+    
+    // Setup vegetation (Phase 2)
+    this.vegetation = setupVegetationGraphics(this.scene, terrainSim, this.state.day)
 
     // Camera: orbital view over valley
     this.camera = new THREE.PerspectiveCamera(
@@ -150,6 +162,11 @@ class DeadwaterGulch {
     if (!this.renderer || !this.scene || !this.camera) return
 
     this.frameCount++
+    
+    // Update water animation
+    if (this.water) {
+      updateWater(this.water, 0.016) // ~60fps delta
+    }
 
     // Update FPS display
     const now = Date.now()
@@ -167,6 +184,9 @@ class DeadwaterGulch {
     const qaDiv = document.getElementById('qa')
     if (qaDiv) {
       let text = `FPS: ${this.fps}\nDay: ${this.state.day}\nPop: ${this.state.population}`
+      if (this.vegetation) {
+        text += `\nGrass: ${this.vegetation.totalCount}`
+      }
       if (window.qa.error) {
         text += `\n[ERROR] ${window.qa.error}`
       }
