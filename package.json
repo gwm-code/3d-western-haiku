@@ -1,0 +1,24 @@
+{
+  "name": "deadwater-gulch",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.184.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.184.1",
+    "@types/node": "^20.10.0",
+    "@webgpu/types": "^0.1.33",
+    "@vitest/ui": "^1.0.4",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8",
+    "vitest": "^1.0.4",
+    "playwright": "^1.40.1"
+  }
+}
