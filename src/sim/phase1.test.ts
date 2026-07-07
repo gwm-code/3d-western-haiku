@@ -105,9 +105,14 @@ describe('Phase 1: Terrain & Valley', () => {
   it('riverDistance measures distance to river', () => {
     const terrain = generateTerrain(seed)
     
-    // Sample various points
-    const dist1 = riverDistance(terrain, 10 * terrain.cellSize, 10 * terrain.cellSize)
-    const dist2 = riverDistance(terrain, 200 * terrain.cellSize, 200 * terrain.cellSize)
+    // Find an actual river cell from the mask and sample there — the river runs
+    // down the east valley as a meandering channel.
+    let rx = 0, ry = 0
+    for (let i = 0; i < terrain.riverMask.length; i++) {
+      if (terrain.riverMask[i]) { rx = i % terrain.width; ry = Math.floor(i / terrain.width); break }
+    }
+    const dist1 = riverDistance(terrain, rx * terrain.cellSize, ry * terrain.cellSize)
+    const dist2 = riverDistance(terrain, 50 * terrain.cellSize, 50 * terrain.cellSize)
     
     // Should return a number
     expect(typeof dist1).toBe('number')

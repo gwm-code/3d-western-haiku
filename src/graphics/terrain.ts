@@ -5,6 +5,8 @@
 
 import * as THREE from 'three'
 import type { TerrainMap } from '../sim/terrain'
+import { TERRAIN } from '../sim/types'
+const TERR_MAX_ELEV = TERRAIN.maxElevation
 
 /**
  * Generate Three.js BufferGeometry from terrain heightmap.
@@ -20,6 +22,8 @@ export function createTerrainGeometry(terrain: TerrainMap): THREE.BufferGeometry
   const uvs: number[] = []
   
   // Build vertex data
+  const colors: number[] = []
+  const maxH = TERR_MAX_ELEV
   for (let z = 0; z < height; z++) {
     for (let x = 0; x < width; x++) {
       const h = heightmap[z * width + x]
@@ -31,6 +35,20 @@ export function createTerrainGeometry(terrain: TerrainMap): THREE.BufferGeometry
       
       // UV: normalize to [0,1]
       uvs.push(x / (width - 1), z / (height - 1))
+
+      // Per-vertex biome color: red desert (west) -> tan steppe -> green valley (east),
+      // with pale rock on the tall butte tops/walls.
+      const biome = terrain.biomeMap[z * width + x]
+      let r: number, g: number, b: number
+      if (biome === 0) { r = 0.72; g = 0.35; b = 0.20 }      // red desert dirt
+      else if (biome === 1) { r = 0.76; g = 0.66; b = 0.42 } // sage/tan steppe
+      else { r = 0.42; g = 0.55; b = 0.28 }                   // green valley
+      // High ground (buttes) shades toward pale sandstone rock.
+      const rock = Math.min(1, Math.max(0, (h / maxH - 0.28) / 0.4))
+      r = r * (1 - rock) + 0.66 * rock
+      g = g * (1 - rock) + 0.45 * rock
+      b = b * (1 - rock) + 0.34 * rock
+      colors.push(r, g, b)
     }
   }
   
@@ -52,6 +70,7 @@ export function createTerrainGeometry(terrain: TerrainMap): THREE.BufferGeometry
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3))
   geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2))
+  geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
   geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(indices), 1))
   
   // Compute normals
@@ -66,9 +85,9 @@ export function createTerrainGeometry(terrain: TerrainMap): THREE.BufferGeometry
  */
 export function createTerrainMaterial(): THREE.Material {
   return new THREE.MeshStandardMaterial({
-    color: 0xC4A86B, // Desert sand
+    vertexColors: true, // biome colors from geometry (red desert -> steppe -> green valley)
     metalness: 0,
-    roughness: 0.85,
+    roughness: 0.9,
     wireframe: false,
   })
 }
