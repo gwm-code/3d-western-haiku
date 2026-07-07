@@ -4,9 +4,17 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import type { BuildingType } from '../sim/types'
+import type { Building, BuildingType } from '../sim/types'
+import { createBuildingMesh } from './buildings'
 
-// All possible building types (must match types.ts BuildingType union)
+// 16 core building types that must have mesh definitions
+const CORE_BUILDING_TYPES: BuildingType[] = [
+  'tent', 'cabin', 'well', 'farm', 'ranch', 'sawmill',
+  'mine', 'saloon', 'sheriff', 'church', 'doctor', 'bank',
+  'telegraph', 'assay', 'firehouse', 'rail-depot',
+]
+
+// All 21 types for complete coverage
 const ALL_BUILDING_TYPES: BuildingType[] = [
   'cabin', 'saloon', 'general-store', 'church', 'bank',
   'mine', 'pasture', 'lumber-mill', 'water-tower',
@@ -16,16 +24,30 @@ const ALL_BUILDING_TYPES: BuildingType[] = [
 ]
 
 describe('Graphics: Building Meshes', () => {
+  it('All 16 core building types return non-empty meshes', () => {
+    for (const type of CORE_BUILDING_TYPES) {
+      const building: Building = {
+        id: `test-${type}`,
+        type,
+        pos: { x: 0, y: 0, z: 0 },
+        terraceHeight: 0,
+        rotation: 0,
+        workers: 0,
+        maxWorkers: 5,
+        status: 'active',
+        age: 0,
+        condition: 1.0,
+      }
+      
+      const mesh = createBuildingMesh(building)
+      expect(mesh).toBeDefined()
+      expect(mesh.children.length).toBeGreaterThan(0)
+    }
+  })
+
   it('All 21 BuildingType values have geometry definitions', () => {
     expect(ALL_BUILDING_TYPES.length).toBe(21)
-    
-    // This test serves as documentation that all types must have meshes
-    // If a type is added to BuildingType but not to BUILDING_GEOMETRIES,
-    // the game will error when trying to create that building
-    ALL_BUILDING_TYPES.forEach(type => {
-      expect(type).toBeDefined()
-      expect(typeof type).toBe('string')
-    })
+    expect(CORE_BUILDING_TYPES.length).toBe(16)
   })
 
   it('Building types are distinct (no duplicates)', () => {

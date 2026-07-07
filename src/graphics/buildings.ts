@@ -43,6 +43,11 @@ const BUILDING_GEOMETRIES: Record<BuildingType, BuildingGeometry> = {
  * Create 3D mesh for a building.
  */
 export function createBuildingMesh(building: Building): THREE.Group {
+  // Special handling for rail-depot with distinct silhouette
+  if (building.type === 'rail-depot') {
+    return createRailDepotMesh(building)
+  }
+  
   const group = new THREE.Group()
   group.position.set(building.pos.x, building.pos.y + building.terraceHeight, building.pos.z)
   group.rotation.y = building.rotation
@@ -74,6 +79,97 @@ export function createBuildingMesh(building: Building): THREE.Group {
   roof.receiveShadow = true
   roof.position.y = geom.height + 0.2
   group.add(roof)
+  
+  return group
+}
+
+/**
+ * Create distinct rail-depot mesh: long platform + water tower with legs.
+ */
+function createRailDepotMesh(building: Building): THREE.Group {
+  const group = new THREE.Group()
+  group.position.set(building.pos.x, building.pos.y + building.terraceHeight, building.pos.z)
+  group.rotation.y = building.rotation
+  
+  // Long low platform (loading platform)
+  const platformGeom = new THREE.BoxGeometry(4.0, 1.0, 2.0)
+  const platformMat = new THREE.MeshStandardMaterial({ 
+    color: 0x8B4513, 
+    roughness: 0.8 
+  })
+  const platform = new THREE.Mesh(platformGeom, platformMat)
+  platform.castShadow = true
+  platform.receiveShadow = true
+  platform.position.y = 0.5
+  group.add(platform)
+  
+  // Platform roof overhang
+  const roofGeom = new THREE.BoxGeometry(4.2, 0.3, 2.2)
+  const roofMat = new THREE.MeshStandardMaterial({ 
+    color: 0x654321, 
+    roughness: 0.7 
+  })
+  const roof = new THREE.Mesh(roofGeom, roofMat)
+  roof.castShadow = true
+  roof.receiveShadow = true
+  roof.position.y = 1.3
+  group.add(roof)
+  
+  // Water tower: tall narrow cylinder on the right side
+  const towerBaseGeom = new THREE.CylinderGeometry(0.4, 0.5, 0.3, 8)
+  const baseMat = new THREE.MeshStandardMaterial({ 
+    color: 0x696969, 
+    metalness: 0.6 
+  })
+  const towerBase = new THREE.Mesh(towerBaseGeom, baseMat)
+  towerBase.castShadow = true
+  towerBase.receiveShadow = true
+  towerBase.position.set(1.5, 0.15, 0)
+  group.add(towerBase)
+  
+  // Tower support legs (4 thin cylinders)
+  const legGeom = new THREE.CylinderGeometry(0.08, 0.08, 1.8, 6)
+  const legMat = new THREE.MeshStandardMaterial({ 
+    color: 0x36454F, 
+    metalness: 0.7 
+  })
+  for (let i = 0; i < 4; i++) {
+    const angle = (i / 4) * Math.PI * 2
+    const leg = new THREE.Mesh(legGeom, legMat)
+    leg.castShadow = true
+    leg.receiveShadow = true
+    leg.position.set(
+      1.5 + Math.cos(angle) * 0.35,
+      0.9,
+      Math.sin(angle) * 0.35
+    )
+    group.add(leg)
+  }
+  
+  // Tower tank (tall narrow cylinder)
+  const tankGeom = new THREE.CylinderGeometry(0.35, 0.38, 1.5, 8)
+  const tankMat = new THREE.MeshStandardMaterial({ 
+    color: 0x8B8B7A, 
+    roughness: 0.6,
+    metalness: 0.4
+  })
+  const tank = new THREE.Mesh(tankGeom, tankMat)
+  tank.castShadow = true
+  tank.receiveShadow = true
+  tank.position.set(1.5, 1.95, 0)
+  group.add(tank)
+  
+  // Tank roof (cone)
+  const roofConeGeom = new THREE.ConeGeometry(0.35, 0.3, 8)
+  const roofConeMat = new THREE.MeshStandardMaterial({ 
+    color: 0x654321,
+    roughness: 0.7
+  })
+  const roofCone = new THREE.Mesh(roofConeGeom, roofConeMat)
+  roofCone.castShadow = true
+  roofCone.receiveShadow = true
+  roofCone.position.set(1.5, 2.8, 0)
+  group.add(roofCone)
   
   return group
 }

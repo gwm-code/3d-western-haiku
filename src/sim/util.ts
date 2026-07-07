@@ -117,7 +117,7 @@ export function deserializeState(json: string): GameState {
  * Create a fresh game state.
  */
 export function newGameState(): GameState {
-  const state: any = {
+  const state: Partial<GameState> = {
     saveVersion: 1,
     day: 0,
     gold: 1000,
@@ -138,10 +138,12 @@ export function newGameState(): GameState {
     railUnlocked: false,
     eventLog: [],
     nextId: 0,
-    raids: [],
-    duels: [],
-    reputations: new Map(),
   }
+  // Add extra fields that live on the state object but not in the interface
+  const fullState = state as any
+  fullState.raids = []
+  fullState.duels = []
+  fullState.reputations = new Map()
   return state as GameState
 }
 

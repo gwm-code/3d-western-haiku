@@ -5,6 +5,7 @@
 
 import * as THREE from 'three'
 import type { GameState, Train } from '../sim/types'
+import type { Raid } from '../sim/raids'
 
 /**
  * Train actor for rail-depot connections.
@@ -289,7 +290,8 @@ export function updateMotionActors(actors: MotionActors, state: GameState, scene
   }
   
   // Update raid riders (spawn when raids are active)
-  const activeRaids = (state as any).raids?.filter((r: any) => r.status === 'attacking') || []
+  const raids = (state as any).raids as Raid[] || []
+  const activeRaids = raids.filter((r: Raid) => r.status === 'attacking')
   if (activeRaids.length === 0) {
     // Clear raid riders when raids end
     actors.raidRiders.forEach(rider => scene.remove(rider.mesh))
