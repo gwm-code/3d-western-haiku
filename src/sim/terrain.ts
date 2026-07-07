@@ -62,9 +62,12 @@ function computeSlopeMap(heightmap: Float32Array, width: number, height: number,
     for (let x = 0; x < width; x++) {
       const idx = y * width + x
       const h = heightmap[idx]
-      let maxSlope = 0
+      let slopeSum = 0
+      let slopeCount = 0
       
-      // Check 8 neighbors
+      // Average slope over neighbors. Using max() made a single noisy neighbor
+      // spike the slope of nearly every cell, so placement rejected the whole map
+      // as "too steep". Average reflects actual buildable ground. Reviewer fix.
       for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
           if (dx === 0 && dy === 0) continue
@@ -78,11 +81,12 @@ function computeSlopeMap(heightmap: Float32Array, width: number, height: number,
           const dist = Math.sqrt(dx * dx + dy * dy) * cellSize
           const slope = Math.atan(dh / dist)
           
-          maxSlope = Math.max(maxSlope, slope)
+          slopeSum += slope
+          slopeCount++
         }
       }
       
-      slopeMap[idx] = maxSlope
+      slopeMap[idx] = slopeCount > 0 ? slopeSum / slopeCount : 0
     }
   }
   

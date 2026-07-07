@@ -55,7 +55,7 @@ export function canPlace(
   // slopes are rejected. Reviewer fix: the old 0.15-rad hard cap rejected almost the
   // entire hilly map, so every tap failed with "slope-too-steep".
   const slope = sampleSlope(terrain, x, z)
-  if (slope > TERRAIN.maxSlope * 4) {
+  if (slope > TERRAIN.maxSlope) {
     return { valid: false, reason: 'slope-too-steep' }
   }
   

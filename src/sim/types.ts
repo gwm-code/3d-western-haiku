@@ -142,8 +142,8 @@ export const ECONOMY = {
  * Terrain rules for placement.
  */
 export const TERRAIN = {
-  maxSlope: 0.15, // radians; steeper requires terrace
-  minRiverDist: 2.5,
+  maxSlope: 0.6, // radians; measured terrain median ~0.35, so 0.6 makes ~95% buildable
+  minRiverDist: 0.5, // only actual river cells block; banks are buildable (playability)
   maxElevation: 80,
   minElevation: 0,
 } as const
