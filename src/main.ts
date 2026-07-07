@@ -3,6 +3,9 @@ import { WebGPURenderer } from 'three/webgpu'
 import type { GameState } from './sim/types'
 import { newGameState, serializeState, deserializeState } from './sim/util'
 import { setSeed } from './sim/rng'
+import { generateTerrain } from './sim/terrain'
+import { setupTerrainGraphics } from './graphics/terrain'
+import type { TerrainGraphics } from './graphics/terrain'
 
 /**
  * QA harness interface (exposed to console/tests).
@@ -30,6 +33,7 @@ class DeadwaterGulch {
   private frameCount = 0
   private lastFpsUpdate = Date.now()
   private fps = 0
+  private terrain: TerrainGraphics | null = null
 
   constructor() {
     this.state = this.loadState()
@@ -89,24 +93,23 @@ class DeadwaterGulch {
       this.setError(event.error?.message || 'Unknown GPU error')
     }
 
-    // Scene setup (Phase 0: empty)
+    // Scene setup with terrain
     this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color(0x87CEEB) // Sky blue placeholder
+    this.scene.background = new THREE.Color(0x87CEEB)
 
-    // Camera
+    // Generate terrain (Phase 1)
+    const terrainSim = generateTerrain(this.state.day, 256, 256, 2.0)
+    this.terrain = setupTerrainGraphics(this.scene, terrainSim)
+
+    // Camera: orbital view over valley
     this.camera = new THREE.PerspectiveCamera(
       60,
       canvas.clientWidth / canvas.clientHeight,
       0.1,
       1000
     )
-    this.camera.position.set(0, 20, 30)
-    this.camera.lookAt(0, 0, 0)
-
-    // Minimal lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1)
-    light.position.set(10, 20, 10)
-    this.scene.add(light)
+    this.camera.position.set(200, 80, 200)
+    this.camera.lookAt(256, 40, 256)
 
     // Setup QA harness
     this.setupQA()

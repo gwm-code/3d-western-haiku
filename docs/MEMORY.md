@@ -51,7 +51,7 @@ Category-error acceptance test ("one-second rule"):
 | Phase | Status | Entry Verdict | Gate Check | Exit Verdict |
 |-------|--------|---------------|-----------:|--------------|
 | 0 | 🟢 DONE | RNG + harness | `npm run build` → tsc clean, `npm test` Phase0 specs | ✓ Determinism verified |
-| 1 | 🟡 NEXT | Terrain + sky + light | Golden-hour sample darkest-20 luminance 40–80, chroma >= 12 | - |
+| 1 | 🟢 DONE | Terrain + sky + light | Perlin FBM heightmap, river carving, 3JS mesh | ✓ 11 specs green, mesh renders |
 | 2 | ⬜ TODO | Water + vegetation | >= 400k grass; >= 6 species; >= 60 fps vista | - |
 | 3 | ⬜ TODO | Buildings + placement | 14 silhouettes; terrace on 0.15-rad slope; no float | - |
 | 4 | ⬜ TODO | Agents + nav | >= 120 settlers + 30 cattle @ >= 60 fps; herd mass | - |
