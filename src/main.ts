@@ -10,6 +10,8 @@ import { setupWaterGraphics, updateWater } from './graphics/water'
 import type { WaterGraphics } from './graphics/water'
 import { setupVegetationGraphics } from './graphics/vegetation'
 import type { VegetationGraphics } from './graphics/vegetation'
+import type { GameManager } from './sim/gamemanager'
+import { newGameManager, tickGame, renderHUDOverlay, restartGame } from './sim/gamemanager'
 
 /**
  * QA harness interface (exposed to console/tests).
@@ -33,7 +35,9 @@ class DeadwaterGulch {
   private renderer: WebGPURenderer | null = null
   private scene: THREE.Scene | null = null
   private camera: THREE.PerspectiveCamera | null = null
+  private canvas: HTMLCanvasElement | null = null
   private state: GameState
+  private gameManager: GameManager | null = null
   private frameCount = 0
   private lastFpsUpdate = Date.now()
   private fps = 0
@@ -73,6 +77,10 @@ class DeadwaterGulch {
   async init() {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement
     if (!canvas) throw new Error('No canvas element')
+    this.canvas = canvas
+
+    // Initialize game manager
+    this.gameManager = newGameManager(this.state)
 
     // Initialize WebGPU renderer
     const adapter = await navigator.gpu?.requestAdapter()
@@ -159,13 +167,17 @@ class DeadwaterGulch {
   private animate = () => {
     requestAnimationFrame(this.animate)
 
-    if (!this.renderer || !this.scene || !this.camera) return
+    if (!this.renderer || !this.scene || !this.camera || !this.gameManager || !this.canvas) return
 
     this.frameCount++
     
+    // Tick game simulation
+    tickGame(this.gameManager, 0.016)
+    this.state = this.gameManager.state
+    
     // Update water animation
     if (this.water) {
-      updateWater(this.water, 0.016) // ~60fps delta
+      updateWater(this.water, 0.016)
     }
 
     // Update FPS display
@@ -177,20 +189,44 @@ class DeadwaterGulch {
       this.lastFpsUpdate = now
     }
 
-    // Render
+    // Save state periodically
+    if (this.gameManager.state.day % 10 === 0) {
+      this.saveState()
+    }
+
+    // Render 3D scene
     this.renderer.render(this.scene, this.camera)
 
-    // Update display
+    // Render HUD overlay
+    const hudCanvas = document.createElement('canvas')
+    hudCanvas.width = this.canvas.width
+    hudCanvas.height = this.canvas.height
+    renderHUDOverlay(this.gameManager, hudCanvas)
+
+    // Update QA display
     const qaDiv = document.getElementById('qa')
     if (qaDiv) {
       let text = `FPS: ${this.fps}\nDay: ${this.state.day}\nPop: ${this.state.population}`
+      text += `\nMorale: ${Math.floor(this.state.morale)}%`
+      text += `\nGold: ${Math.floor(this.state.gold)}`
       if (this.vegetation) {
         text += `\nGrass: ${this.vegetation.totalCount}`
+      }
+      if (this.gameManager.gameStatus !== 'playing') {
+        text += `\nStatus: ${this.gameManager.gameStatus.toUpperCase()}`
       }
       if (window.qa.error) {
         text += `\n[ERROR] ${window.qa.error}`
       }
       qaDiv.textContent = text
+    }
+
+    // Handle game over
+    if (this.gameManager.isGameOver && this.gameManager.gameStatus !== 'playing') {
+      const message = this.gameManager.gameStatus === 'won' ? 
+        'VICTORY! Press R to restart' : 
+        'GAME OVER! Press R to restart'
+      console.log(message)
     }
   }
 }
