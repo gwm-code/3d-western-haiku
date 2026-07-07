@@ -107,6 +107,7 @@ export function deserializeState(json: string): GameState {
     train: data.train ?? null,
     railUnlocked: data.railUnlocked ?? false,
     eventLog: data.eventLog ?? [],
+    nextId: data.nextId ?? 0,
   }
 
   return state
@@ -136,6 +137,7 @@ export function newGameState(): GameState {
     train: null,
     railUnlocked: false,
     eventLog: [],
+    nextId: 0,
     raids: [],
     duels: [],
     reputations: new Map(),

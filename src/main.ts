@@ -10,6 +10,8 @@ import { setupWaterGraphics, updateWater } from './graphics/water'
 import type { WaterGraphics } from './graphics/water'
 import { setupVegetationGraphics } from './graphics/vegetation'
 import type { VegetationGraphics } from './graphics/vegetation'
+import { newMotionActors, updateMotionActors } from './graphics/actors'
+import type { MotionActors } from './graphics/actors'
 import type { GameManager } from './sim/gamemanager'
 import { newGameManager, tickGame, renderHUDOverlay, restartGame } from './sim/gamemanager'
 
@@ -44,6 +46,7 @@ class DeadwaterGulch {
   private terrain: TerrainGraphics | null = null
   private water: WaterGraphics | null = null
   private vegetation: VegetationGraphics | null = null
+  private motionActors: MotionActors | null = null
 
   constructor() {
     this.state = this.loadState()
@@ -121,6 +124,9 @@ class DeadwaterGulch {
     // Setup vegetation (Phase 2)
     this.vegetation = setupVegetationGraphics(this.scene, terrainSim, this.state.day)
 
+    // Initialize motion actors (train, raid riders, tumbleweeds)
+    this.motionActors = newMotionActors()
+
     // Camera: orbital view over valley
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -178,6 +184,11 @@ class DeadwaterGulch {
     // Update water animation
     if (this.water) {
       updateWater(this.water, 0.016)
+    }
+
+    // Update motion actors (train, raid riders, tumbleweeds)
+    if (this.motionActors && this.scene) {
+      updateMotionActors(this.motionActors, this.state, this.scene, 0.016)
     }
 
     // Update FPS display

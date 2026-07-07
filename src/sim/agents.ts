@@ -138,7 +138,7 @@ export function spawnSettlers(state: GameState, terrain: TerrainMap) {
   if (state.food < state.population * 1.0) adjustedRate *= 0.1
   
   if (rngBool(adjustedRate)) {
-    const settlerId = `settler_${Date.now()}_${Math.random()}`
+    const settlerId = `settler_${state.nextId++}`
     
     // Spawn at town center (or random building)
     const buildings = Array.from(state.buildings.values())
@@ -165,7 +165,7 @@ export function spawnSettlers(state: GameState, terrain: TerrainMap) {
  * Spawn cattle drives (major event).
  */
 export function spawnCattleDrive(state: GameState, terrain: TerrainMap) {
-  const herdId = `herd_${Date.now()}`
+  const herdId = `herd_${state.nextId++}`
   
   const herd: Herd = {
     id: herdId,

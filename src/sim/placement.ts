@@ -148,6 +148,12 @@ export function getBuildingSize(type: BuildingType): number {
     'telegraph': 1.5,
     'rail-depot': 5.0,
     'barracks': 3.0,
+    'tent': 2.5,
+    'well': 1.5,
+    'farm': 4.0,
+    'ranch': 4.5,
+    'sawmill': 3.0,
+    'assay': 2.0,
   }
   return sizes[type]
 }

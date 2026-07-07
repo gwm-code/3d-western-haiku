@@ -4,6 +4,8 @@
  */
 
 import type { GameState } from './types'
+import type { Fire } from './fire'
+import type { Disease } from './disease'
 import { setSeed } from './rng'
 import { tickWeather, applyWeatherEffects } from './weather'
 import { triggerRaid, updateRaids, pruneRaidHistory } from './raids'
@@ -31,8 +33,8 @@ export interface GameManager {
   gameStatus: 'playing' | 'won' | 'lost'
   lastTickTime: number
   dayStartTime: number
-  fires: any[] // Fire[]
-  diseases: any[] // Disease[]
+  fires: Fire[]
+  diseases: Disease[]
 }
 
 /**
@@ -147,7 +149,7 @@ export function tickGame(manager: GameManager, deltaTime: number = 0.016): void 
     }
     
     // Remove inactive fires/diseases
-    manager.fires = manager.fires.filter(f => f.status !== 'defeated')
+    manager.fires = manager.fires.filter(f => f.intensity > 0)
     manager.diseases = manager.diseases.filter(d => d.active)
     
     pruneRaidHistory(state)

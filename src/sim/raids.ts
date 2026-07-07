@@ -193,8 +193,8 @@ export function defendAgainstRaid(state: GameState, raid: Raid): boolean {
  * Count active raids.
  */
 export function activeRaidCount(state: GameState): number {
-  const raids = (state as any).raids ?? []
-  return raids.filter((r: any) => r.status === 'incoming' || r.status === 'attacking').length
+  const raids = (state as any).raids as Raid[] ?? []
+  return raids.filter((r: Raid) => r.status === 'incoming' || r.status === 'attacking').length
 }
 
 /**

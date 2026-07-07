@@ -30,6 +30,13 @@ const BUILDING_GEOMETRIES: Record<BuildingType, BuildingGeometry> = {
   'telegraph': { width: 0.8, height: 2.5, depth: 0.8, wallColor: 0x8B4513, roofColor: 0x654321 },
   'rail-depot': { width: 4.0, height: 1.5, depth: 3.0, wallColor: 0x8B4513, roofColor: 0x654321 },
   'barracks': { width: 3.0, height: 1.8, depth: 2.5, wallColor: 0x696969, roofColor: 0x36454F },
+  // New distinct building types
+  'tent': { width: 2.0, height: 2.2, depth: 2.0, wallColor: 0xD3D3D3, roofColor: 0xA9A9A9 },  // Canvas A-frame
+  'well': { width: 1.2, height: 2.0, depth: 1.2, wallColor: 0x8B7355, roofColor: 0x654321 },   // Roofed stone ring
+  'farm': { width: 3.5, height: 0.8, depth: 3.5, wallColor: 0x8FBC8F, roofColor: 0x228B22 },   // Low fenced field + barn
+  'ranch': { width: 4.5, height: 1.2, depth: 2.0, wallColor: 0xA0522D, roofColor: 0x8B4513 }, // Long low barn + corral
+  'sawmill': { width: 3.0, height: 2.5, depth: 2.5, wallColor: 0x8B4513, roofColor: 0x654321 },// Open shed + saw blade
+  'assay': { width: 1.8, height: 1.8, depth: 1.8, wallColor: 0x696969, roofColor: 0x36454F },  // Small office + chimney
 }
 
 /**

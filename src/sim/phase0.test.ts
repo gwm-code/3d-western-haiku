@@ -103,4 +103,29 @@ describe('Phase 0: Determinism & RNG', () => {
     expect(() => deserializeState('{"saveVersion": 999}')).toThrow() // bad version
   })
 
+  it('Deterministic IDs: same seed produces identical settler IDs', () => {
+    // First run
+    setSeed(42)
+    const state1 = newGameState()
+    state1.day = 0
+    for (let i = 0; i < 5; i++) {
+      state1.nextId = 0 // Reset for fair comparison
+      const s1 = `settler_${state1.nextId++}`
+      const s2 = `settler_${state1.nextId++}`
+      expect(s1).toBe('settler_0')
+      expect(s2).toBe('settler_1')
+    }
+
+    // Second run with same seed
+    setSeed(42)
+    const state2 = newGameState()
+    state2.day = 0
+    state2.nextId = 0
+    const s3 = `settler_${state2.nextId++}`
+    const s4 = `settler_${state2.nextId++}`
+    
+    expect(s3).toBe('settler_0')
+    expect(s4).toBe('settler_1')
+  })
+
 })

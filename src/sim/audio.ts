@@ -3,6 +3,8 @@
  * Web Audio API for synthesis and playback.
  */
 
+import { rng } from './rng'
+
 /**
  * Audio manager (singleton).
  */
@@ -89,7 +91,7 @@ export function playSoundEffect(audio: AudioManager, effect: string): void {
     case 'rain':
       // Quiet patter
       for (let i = 0; i < 3; i++) {
-        setTimeout(() => playBeep(audio, 200 + Math.random() * 100, 0.05), i * 50)
+        setTimeout(() => playBeep(audio, 200 + rng() * 100, 0.05), i * 50)
       }
       break
     default:
@@ -119,7 +121,7 @@ export function startAmbientMusic(audio: AudioManager, tempo: 'slow' | 'normal' 
   }
   
   const freqSet = frequencies[tempo]
-  const baseFreq = freqSet[Math.floor(Math.random() * freqSet.length)]
+  const baseFreq = freqSet[Math.floor(rng() * freqSet.length)]
   
   osc.frequency.value = baseFreq
   osc.type = 'sine'

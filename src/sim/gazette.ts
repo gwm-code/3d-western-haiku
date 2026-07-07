@@ -160,7 +160,7 @@ export function formatGazetteFrontPage(gazette: Gazette, currentDay: number): st
 /**
  * Generate a daily summary for Gazette.
  */
-export function generateDailySummary(state: any, day: number, gazette: Gazette): void {
+export function generateDailySummary(state: GameState, day: number, gazette: Gazette): void {
   // This is called at end of day; entries have already been added by event systems
   // This just ensures we have a summary entry
   

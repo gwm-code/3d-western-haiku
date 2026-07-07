@@ -29,6 +29,7 @@ export type BuildingType =
   | 'mine' | 'pasture' | 'lumber-mill' | 'water-tower'
   | 'doctor' | 'firehouse' | 'sheriff' | 'telegraph'
   | 'rail-depot' | 'barracks'
+  | 'tent' | 'well' | 'farm' | 'ranch' | 'sawmill' | 'assay'
 
 export interface Settler {
   id: string
@@ -77,6 +78,7 @@ export interface GameState {
   railUnlocked: boolean
   eventLog: GameEvent[]
   saveVersion: number
+  nextId: number // Deterministic counter for settler/herd IDs
 }
 
 export interface GameEvent {
@@ -119,7 +121,13 @@ export const ECONOMY = {
     'sheriff': { gold: 100, wood: 150 },
     'telegraph': { gold: 120, wood: 100 },
     'rail-depot': { gold: 500, wood: 600 },
-    'barracks': { gold: 200, wood: 300 }
+    'barracks': { gold: 200, wood: 300 },
+    'tent': { gold: 20, wood: 50 },
+    'well': { gold: 80, wood: 60 },
+    'farm': { gold: 75, wood: 150 },
+    'ranch': { gold: 120, wood: 200 },
+    'sawmill': { gold: 90, wood: 140 },
+    'assay': { gold: 100, wood: 80 }
   } as Record<BuildingType, { gold: number; wood: number }>,
   
   // Settler generation
