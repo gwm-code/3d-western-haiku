@@ -126,10 +126,15 @@ export function createSunlight(scene: THREE.Scene, elevation: number = 45): THRE
 }
 
 /**
- * Create ambient light for fill.
+ * Create chromatic hemisphere ambient (no-black-shadows doctrine).
+ * Warm sky above, cool bounced ground below — shadows pick up cool-blue skylight
+ * instead of reading as flat desaturated gray. This is the single biggest lever
+ * against the "gray shadow" category error at golden hour.
  */
-export function createAmbientLight(scene: THREE.Scene, intensity: number = 0.3): THREE.AmbientLight {
-  const light = new THREE.AmbientLight(0xFFFFFF, intensity)
+export function createAmbientLight(scene: THREE.Scene, intensity: number = 0.9): THREE.HemisphereLight {
+  // skyColor: warm daylight sky; groundColor: cool dusty bounce from the valley floor.
+  const light = new THREE.HemisphereLight(0xBFD8FF /* sky */, 0x8A6A45 /* ground bounce */, intensity)
+  light.position.set(0, 50, 0)
   scene.add(light)
   return light
 }
@@ -143,7 +148,7 @@ export interface TerrainGraphics {
   mesh: THREE.Mesh
   sky: THREE.Mesh
   sun: THREE.DirectionalLight
-  ambient: THREE.AmbientLight
+  ambient: THREE.HemisphereLight
 }
 
 /**
@@ -159,7 +164,7 @@ export function setupTerrainGraphics(scene: THREE.Scene, terrain: TerrainMap): T
   
   const sky = createSkyDome(scene)
   const sun = createSunlight(scene, 45) // 45° elevation (morning)
-  const ambient = createAmbientLight(scene, 0.3)
+  const ambient = createAmbientLight(scene, 0.9)
   
   return {
     geometry,

@@ -104,6 +104,12 @@ class DeadwaterGulch {
     })
     await this.renderer.init()
 
+    // Deliberate art grade: filmic tone mapping so highlights roll off and the deep toe
+    // reads as film, not crushed black. Paired with hemisphere ambient, this is what keeps
+    // golden-hour shadows chromatic (target: darkest-20 luminance ~60/255, chroma >=12/255).
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+    this.renderer.toneMappingExposure = 1.05
+
     // Wire error handler
     device.onuncapturederror = (event: any) => {
       console.error('[WebGPU Error]', event.error)
