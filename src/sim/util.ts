@@ -116,7 +116,7 @@ export function deserializeState(json: string): GameState {
  * Create a fresh game state.
  */
 export function newGameState(): GameState {
-  return {
+  const state: any = {
     saveVersion: 1,
     day: 0,
     gold: 1000,
@@ -136,7 +136,11 @@ export function newGameState(): GameState {
     train: null,
     railUnlocked: false,
     eventLog: [],
+    raids: [],
+    duels: [],
+    reputations: new Map(),
   }
+  return state as GameState
 }
 
 /**
