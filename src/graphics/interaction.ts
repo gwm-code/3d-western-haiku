@@ -76,7 +76,7 @@ export function setupInteraction(deps: InteractionDeps): { selected: () => Build
       // pinch-zoom
       const d = pinchDistance()
       if (lastPinchDist > 0) {
-        orbit.radius = clamp(orbit.radius * (lastPinchDist / d), 40, 500)
+        orbit.radius = clamp(orbit.radius * (lastPinchDist / d), 15, 500)
         applyOrbit(camera, orbit)
       }
       lastPinchDist = d
@@ -92,7 +92,7 @@ export function setupInteraction(deps: InteractionDeps): { selected: () => Build
 
   const onWheel = (e: WheelEvent) => {
     e.preventDefault()
-    orbit.radius = clamp(orbit.radius * (1 + Math.sign(e.deltaY) * 0.1), 40, 500)
+    orbit.radius = clamp(orbit.radius * (1 + Math.sign(e.deltaY) * 0.1), 15, 500)
     applyOrbit(camera, orbit)
   }
 

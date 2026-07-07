@@ -59,7 +59,11 @@ class DeadwaterGulch {
     try {
       const saved = localStorage.getItem('deadwater_save_v1')
       if (saved) {
-        return deserializeState(saved)
+        const s = deserializeState(saved)
+        // Don't resurrect a dead save: if the stored game already collapsed, start
+        // fresh so the player isn't stuck on a permanent LOST board. Reviewer fix.
+        if (s.morale <= 0 || s.food <= 0 || s.population <= 0) return newGameState()
+        return s
       }
     } catch (e) {
       console.warn('Save load failed, starting fresh:', e)

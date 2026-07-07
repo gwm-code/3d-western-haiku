@@ -50,9 +50,12 @@ export function canPlace(
     return { valid: false, reason: 'too-close-to-river' }
   }
   
-  // Slope check: steeper than maxSlope requires terrace
+  // Slope check: gentle slopes build directly; moderate slopes are allowed but will
+  // be terraced (computeTerraceHeight handles the platform); only genuinely extreme
+  // slopes are rejected. Reviewer fix: the old 0.15-rad hard cap rejected almost the
+  // entire hilly map, so every tap failed with "slope-too-steep".
   const slope = sampleSlope(terrain, x, z)
-  if (slope > TERRAIN.maxSlope) {
+  if (slope > TERRAIN.maxSlope * 4) {
     return { valid: false, reason: 'slope-too-steep' }
   }
   
