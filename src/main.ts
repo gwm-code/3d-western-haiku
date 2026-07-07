@@ -12,6 +12,7 @@ import { setupVegetationGraphics } from './graphics/vegetation'
 import type { VegetationGraphics } from './graphics/vegetation'
 import { newMotionActors, updateMotionActors } from './graphics/actors'
 import type { MotionActors } from './graphics/actors'
+import { setupInteraction } from './graphics/interaction'
 import type { GameManager } from './sim/gamemanager'
 import { newGameManager, tickGame, renderHUDOverlay, restartGame } from './sim/gamemanager'
 
@@ -47,6 +48,7 @@ class DeadwaterGulch {
   private water: WaterGraphics | null = null
   private vegetation: VegetationGraphics | null = null
   private motionActors: MotionActors | null = null
+  private buildings = new Map<string, import('./sim/types').Building>()
 
   constructor() {
     this.state = this.loadState()
@@ -145,6 +147,21 @@ class DeadwaterGulch {
 
     // Setup QA harness
     this.setupQA()
+
+    // Interaction layer (touch + mouse): camera control + tap-to-place.
+    // Added by reviewer — the build previously had no input system at all.
+    if (this.terrain) {
+      setupInteraction({
+        canvas,
+        camera: this.camera,
+        scene: this.scene,
+        terrainMesh: this.terrain.mesh,
+        terrainSim,
+        state: this.state,
+        getBuildings: () => this.buildings,
+        onPlace: (b) => { this.buildings.set(b.id, b) },
+      })
+    }
 
     // Start render loop
     this.animate()

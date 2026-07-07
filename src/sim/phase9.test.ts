@@ -158,17 +158,21 @@ describe('Phase 9: Performance & End-Game', () => {
     expect(checkWinCondition(state)).toBe(true)
   })
   
-  it('lose condition: starvation', () => {
+  it('lose condition: starvation (sustained, not instant)', () => {
     state.food = 0
     state.population = 10
-    
+    // One bad day must NOT end the game (grace period).
+    expect(checkLoseCondition(state)).toBe(false)
+    // Five consecutive starving days does.
+    for (let i = 0; i < 4; i++) checkLoseCondition(state)
     expect(checkLoseCondition(state)).toBe(true)
   })
   
-  it('lose condition: morale collapse', () => {
+  it('lose condition: morale collapse (sustained, not instant)', () => {
     state.morale = 0
     state.population = 20
-    
+    expect(checkLoseCondition(state)).toBe(false)
+    for (let i = 0; i < 4; i++) checkLoseCondition(state)
     expect(checkLoseCondition(state)).toBe(true)
   })
   
@@ -186,11 +190,11 @@ describe('Phase 9: Performance & End-Game', () => {
     expect(getGameStatus(state)).toBe('won')
     
     state.morale = 0
+    for (let i = 0; i < 5; i++) checkLoseCondition(state) // sustained collapse
     expect(getGameStatus(state)).toBe('lost')
     
-    state.morale = 50
-    state.wealth = 1000
-    expect(getGameStatus(state)).toBe('playing')
+    const fresh = { ...state, morale: 50, wealth: 1000, food: 100, population: 20 } as typeof state
+    expect(getGameStatus(fresh)).toBe('playing')
   })
   
   it('settlement score calculation', () => {

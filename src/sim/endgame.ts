@@ -46,15 +46,17 @@ export function checkWinCondition(state: GameState, condition: WinCondition = DE
  * Check if player has lost (catastrophic failure).
  */
 export function checkLoseCondition(state: GameState): boolean {
-  // Instant loss: no food and population > 0 (starvation)
-  if (state.food <= 0 && state.population > 0) return true
-  
-  // Instant loss: morale collapses (settlement abandonment)
-  if (state.morale <= 0) return true
-  
-  // Instant loss: population extinct
+  // Grace-based loss: a single bad tick must not end the game. Track consecutive
+  // days of catastrophe and only lose after sustained collapse, so the player has
+  // time to react (build a farm, etc.). Reviewer fix: instant-loss made it unplayable.
+  const s = state as unknown as { _starveDays?: number; _moraleDays?: number }
+  s._starveDays = state.food <= 0 && state.population > 0 ? (s._starveDays ?? 0) + 1 : 0
+  s._moraleDays = state.morale <= 0 ? (s._moraleDays ?? 0) + 1 : 0
+
+  if (s._starveDays >= 5) return true              // 5 days with no food
+  if (s._moraleDays >= 5) return true              // 5 days of total collapse
   if (state.population <= 0 && state.day > 50) return true
-  
+
   return false
 }
 
