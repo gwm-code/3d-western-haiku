@@ -10,7 +10,7 @@ interface LightState { sunDir: THREE.Vector3; sunColor: number; sunI: number; sk
 const STATES: LightState[] = [
   { sunDir: new THREE.Vector3(0.9, 0.25, 0.2), sunColor: 0xffd9a8, sunI: 2.2, skyC: 0xcfe4f5, groundC: 0x7a5a3c, hemiI: 0.75, exposure: 1.0, fog: 0xd8c9ae },  // dawn
   { sunDir: new THREE.Vector3(0.1, 1.0, 0.05), sunColor: 0xfff3e0, sunI: 3.1, skyC: 0xbcd8f0, groundC: 0x8a6a45, hemiI: 0.9, exposure: 1.08, fog: 0xd9d2bf },   // harsh noon
-  { sunDir: new THREE.Vector3(-0.9, 0.18, -0.1), sunColor: 0xff9a4d, sunI: 2.4, skyC: 0xe8b98a, groundC: 0x6b4a3a, hemiI: 0.7, exposure: 1.02, fog: 0xe3a875 }, // golden dusk
+  { sunDir: new THREE.Vector3(-0.9, 0.18, -0.1), sunColor: 0xff9a4d, sunI: 2.4, skyC: 0xe8b98a, groundC: 0x7a5a48, hemiI: 1.05, exposure: 1.12, fog: 0xe3a875 }, // golden dusk
   { sunDir: new THREE.Vector3(-0.3, -0.4, 0.6), sunColor: 0x8899cc, sunI: 0.25, skyC: 0x2a3550, groundC: 0x1c1712, hemiI: 0.35, exposure: 0.9, fog: 0x141a28 }, // night
 ]
 
@@ -85,7 +85,9 @@ export function buildScatter(seed: number, scene: THREE.Scene, terrain: Terrain)
       if (b < sp.biome[0] || b > sp.biome[1]) continue
       const y = terrain.heightAt(x, z)
       if (y > 13 || y < 0.7) continue // not on butte walls or in the river
-      if (Math.hypot(x - WORLD * 0.52, z - WORLD * 0.5) < 46) continue // keep the town square clear
+      const dTown = Math.hypot(x - WORLD * 0.52, z - WORLD * 0.5)
+      if (dTown < 26) continue // town square proper stays clear
+      if (dTown < 64 && rng() > (dTown - 26) / 38) continue // feathered falloff, no crop-circle edge
       dummy.position.set(x, y, z)
       dummy.rotation.y = rng() * Math.PI * 2
       const sc = 0.45 + rng() * 0.6

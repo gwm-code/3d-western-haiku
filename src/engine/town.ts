@@ -79,20 +79,16 @@ export function buildTown(seed: number, scene: THREE.Scene, terrain: Terrain): T
     group.add(g)
     windowMats.push(...winMats)
   })
-  // wheel-rut street strip
-  const rut = new THREE.Mesh(new THREE.PlaneGeometry(6, 78), new MeshStandardNodeMaterial({ color: 0x7a5836, roughness: 1 }))
-  rut.rotation.x = -Math.PI / 2
-  rut.position.set(cx, center.y + 0.06, cz)
-  group.add(rut)
   scene.add(group)
 
   // chimney smoke: simple points drifting up
   const smokeGeo = new THREE.BufferGeometry()
-  const N = 240
+  const N = 90
   const sp = new Float32Array(N * 3)
-  for (let i = 0; i < N; i++) { sp[i * 3] = cx - 9 + rng() * 18; sp[i * 3 + 1] = center.y + 5 + rng() * 8; sp[i * 3 + 2] = cz - 24 + rng() * 48 }
+  const CHIM = [ [cx - 9, cz - 24], [cx + 9, cz - 8], [cx - 9, cz + 8] ]
+  for (let i = 0; i < N; i++) { const c = CHIM[i % 3]; sp[i * 3] = c[0] + (rng() - 0.5) * 1.2; sp[i * 3 + 1] = center.y + 6 + rng() * 9; sp[i * 3 + 2] = c[1] + (rng() - 0.5) * 1.2 }
   smokeGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3))
-  const smoke = new THREE.Points(smokeGeo, new THREE.PointsMaterial({ color: 0xcfc6b8, size: 0.7, transparent: true, opacity: 0.35 }))
+  const smoke = new THREE.Points(smokeGeo, new THREE.PointsMaterial({ color: 0xcfc6b8, size: 0.5, transparent: true, opacity: 0.22 }))
   scene.add(smoke)
 
   // resident agents: capsule-ish figures that mill about main street
@@ -106,9 +102,10 @@ export function buildTown(seed: number, scene: THREE.Scene, terrain: Terrain): T
     const arr = smoke.geometry.attributes.position as THREE.BufferAttribute
     for (let i = 0; i < N; i++) {
       let y = arr.getY(i) + dt * 1.1
-      if (y > center.y + 16) y = center.y + 5
+      const c = [ [cx - 9, cz - 24], [cx + 9, cz - 8], [cx - 9, cz + 8] ][i % 3]
+      if (y > center.y + 16) { y = center.y + 6; arr.setX(i, c[0] + (rng() - 0.5) * 1.2); arr.setZ(i, c[1] + (rng() - 0.5) * 1.2) }
       arr.setY(i, y)
-      arr.setX(i, arr.getX(i) + dt * 0.4)
+      arr.setX(i, arr.getX(i) + dt * 0.35)
     }
     arr.needsUpdate = true
     // agents: one mesh per living resident, wandering the street
