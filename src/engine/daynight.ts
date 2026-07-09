@@ -66,11 +66,11 @@ export function buildScatter(seed: number, scene: THREE.Scene, terrain: Terrain)
     return m
   }
   const specs = [
-    { geo: new THREE.ConeGeometry(0.5, 1.6, 5), mat: makeSwayMat(0x5a6e35), n: 90000, biome: [0.8, 2.1] },  // grass tufts (valley/steppe)
-    { geo: new THREE.IcosahedronGeometry(0.8, 0), mat: makeSwayMat(0x6b7a44), n: 60000, biome: [0.3, 1.6] }, // sage
-    { geo: new THREE.ConeGeometry(0.35, 2.2, 6), mat: new MeshStandardNodeMaterial({ color: 0x3f6b3a, roughness: 1 }), n: 50000, biome: [1.5, 2.1] }, // valley reeds/scrub
-    { geo: new THREE.CylinderGeometry(0.22, 0.3, 1.8, 5), mat: new MeshStandardNodeMaterial({ color: 0x4d7040, roughness: 1 }), n: 30000, biome: [-0.1, 0.5] }, // cactus
-    { geo: new THREE.SphereGeometry(0.5, 5, 4), mat: new MeshStandardNodeMaterial({ color: 0x84703f, roughness: 1 }), n: 20000, biome: [-0.1, 0.9] }, // desert scrub
+    { geo: new THREE.ConeGeometry(0.3, 1.1, 5), mat: makeSwayMat(0x5a6e35), n: 42000, biome: [0.8, 2.1] },  // grass tufts (valley/steppe)
+    { geo: new THREE.IcosahedronGeometry(0.45, 0), mat: makeSwayMat(0x6b7a44), n: 26000, biome: [0.3, 1.6] }, // sage
+    { geo: new THREE.ConeGeometry(0.35, 2.2, 6), mat: new MeshStandardNodeMaterial({ color: 0x3f6b3a, roughness: 1 }), n: 22000, biome: [1.5, 2.1] }, // valley reeds/scrub
+    { geo: new THREE.CylinderGeometry(0.22, 0.3, 1.8, 5), mat: new MeshStandardNodeMaterial({ color: 0x4d7040, roughness: 1 }), n: 14000, biome: [-0.1, 0.5] }, // cactus
+    { geo: new THREE.SphereGeometry(0.5, 5, 4), mat: new MeshStandardNodeMaterial({ color: 0x84703f, roughness: 1 }), n: 10000, biome: [-0.1, 0.9] }, // desert scrub
   ]
   let total = 0
   const dummy = new THREE.Object3D()
@@ -85,9 +85,10 @@ export function buildScatter(seed: number, scene: THREE.Scene, terrain: Terrain)
       if (b < sp.biome[0] || b > sp.biome[1]) continue
       const y = terrain.heightAt(x, z)
       if (y > 13 || y < 0.7) continue // not on butte walls or in the river
+      if (Math.hypot(x - WORLD * 0.52, z - WORLD * 0.5) < 46) continue // keep the town square clear
       dummy.position.set(x, y, z)
       dummy.rotation.y = rng() * Math.PI * 2
-      const sc = 0.6 + rng() * 0.9
+      const sc = 0.45 + rng() * 0.6
       dummy.scale.set(sc, sc, sc)
       dummy.updateMatrix()
       im.setMatrixAt(placed++, dummy.matrix)

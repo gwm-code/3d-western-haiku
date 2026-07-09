@@ -7,7 +7,9 @@ import { WORLD } from './terrain'
 import type { GameState } from '../sim/types'
 import { alive } from '../sim/residents'
 
-const WOOD = 0x6b4a2e, ROOF = 0x4a3020, TRIM = 0x8a6a45
+const WOODS = [0x7a5636, 0x6b4a2e, 0x8a6242, 0x5e442c, 0x93765a]
+const ROOFS = [0x5a4030, 0x6e5240, 0x4f3a2b]
+const TRIM = 0x9a815f
 
 export interface Town {
   group: THREE.Group
@@ -21,10 +23,10 @@ export interface Town {
 function building(w: number, h: number, d: number, opts: { sign?: number; steeple?: boolean; windows?: number } = {}): { g: THREE.Group; winMats: THREE.MeshStandardMaterial[] } {
   const g = new THREE.Group()
   const winMats: THREE.MeshStandardMaterial[] = []
-  const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new MeshStandardNodeMaterial({ color: WOOD, roughness: 0.95 }))
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new MeshStandardNodeMaterial({ color: WOODS[Math.floor(rng() * WOODS.length)], roughness: 0.95 }))
   body.position.y = h / 2; body.castShadow = true; body.receiveShadow = true
   g.add(body)
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * 0.78, h * 0.5, 4), new MeshStandardNodeMaterial({ color: ROOF, roughness: 1 }))
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * 0.78, h * 0.5, 4), new MeshStandardNodeMaterial({ color: ROOFS[Math.floor(rng() * ROOFS.length)], roughness: 1 }))
   roof.position.y = h + h * 0.25; roof.rotation.y = Math.PI / 4; roof.castShadow = true
   g.add(roof)
   // false front / sign board
@@ -41,7 +43,7 @@ function building(w: number, h: number, d: number, opts: { sign?: number; steepl
   // lit windows (emissive at night)
   const nWin = opts.windows ?? 2
   for (let i = 0; i < nWin; i++) {
-    const wm = new THREE.MeshStandardMaterial({ color: 0x2a2016, emissive: 0xff9a3d, emissiveIntensity: 0 })
+    const wm = new THREE.MeshStandardMaterial({ color: 0x54452f, emissive: 0xff9a3d, emissiveIntensity: 0 })
     const win = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 0.8), wm)
     win.position.set(-w / 3 + (i * w * 2) / (3 * Math.max(1, nWin - 1)), h * 0.45, d / 2 + 0.03)
     g.add(win); winMats.push(wm)
@@ -113,7 +115,10 @@ export function buildTown(seed: number, scene: THREE.Scene, terrain: Terrain): T
     for (const r of alive(s)) {
       let m = agents.get(r.id)
       if (!m) {
-        m = new THREE.Mesh(agentGeo, new MeshStandardNodeMaterial({ color: 0x33261a + Math.floor(rng() * 0x333333) }))
+        // Dusty period clothing palette — the old `base + random` hex math overflowed
+        // across channels and produced candy blues/purples (seen on device).
+        const CLOTHES = [0x5a4632, 0x6e5a40, 0x4a3b2c, 0x7a6a50, 0x8a7355, 0x3e352a, 0x6b4a2e, 0x59544a]
+        m = new THREE.Mesh(agentGeo, new MeshStandardNodeMaterial({ color: CLOTHES[Math.floor(rng() * CLOTHES.length)], roughness: 1 }))
         m.castShadow = true
         m.position.set(cx + (rng() - 0.5) * 14, center.y + 0.8, cz + (rng() - 0.5) * 60)
         m.userData.t = rng() * 100
